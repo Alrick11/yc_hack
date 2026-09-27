@@ -18,7 +18,7 @@ of anyone's private memory.
 - Task ID: `unassigned`
 - Objective: `unassigned`
 - Status: `draft`
-- Context version: `0.1`
+- Context version: `0.3`
 - Coordinator: `unassigned`
 - Participants: three personal agents
 - Runtime model requirement: local Ollama
@@ -42,7 +42,7 @@ Conditions that must never be violated:
 
 Negotiable preferences that may influence proposal ranking:
 
-- `未-assigned`
+- `unassigned`
 
 ## Proposal history
 
@@ -116,9 +116,30 @@ the blocking reason rather than silently relaxing a constraint.
 - Retrieved procedures are reference material and must be validated against the
   current task before they influence a decision.
 
+## Implemented runtime
+
+- `PullTaskStore` owns task state, agent inboxes, proposal versions, leases,
+  bounded contributions, and terminal outcomes.
+- `PullAgentWorker` claims one delivery, evaluates it with local Ollama and
+  private memory, then submits a versioned contribution.
+- `PullCoordinator` publishes proposals, waits for all required responses,
+  requests revisions, and blocks on unavailable or unsafe agents.
+- `JsonlEventLog` records task, proposal, claim, contribution, revision, and
+  termination events without private profile content.
+- CLI commands are `preflight`, `run`, and `replay`; `pull` is the default run
+  mode and `push` remains available for comparison.
+
+## Validation status
+
+- Local Ollama JSON smoke test: passed.
+- Unit tests: passed.
+- Pull-mode end-to-end run: completed with a replayable blocked outcome when
+  the configured local agents did not reach consensus.
+- Latest implementation commit: `e6c28cb`.
+
 ## Demo-video requirements
 
-- Seed the same 4–5 participant profiles and task every time.
+- Seed the same three participant profiles and task every time.
 - Provide one command or button to reset and run the complete scenario.
 - Show each agent's name, current round, decision, and bounded reason code.
 - Make private-vs-shared context visible without revealing private preference
