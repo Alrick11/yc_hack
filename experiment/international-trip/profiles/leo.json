@@ -1,0 +1,25 @@
+{
+  "id": "leo",
+  "name": "Leo Chen",
+  "age_range": "early 30s",
+  "home_city": "New York",
+  "occupation": "high school teacher",
+  "dietary_needs": [],
+  "travel_preferences": ["history and architecture", "one outdoor activity", "late starts when possible"],
+  "budget_usd_per_person": 1900,
+  "budget_guidelines": {
+    "preferred_max_usd": 1900,
+    "absolute_max_usd": 2100,
+    "flexibility": "Can increase by up to $200 for a strong cultural or activity fit, with explicit approval.",
+    "protected_expenses": ["lodging"]
+  },
+  "accessibility_or_health_notes": [],
+  "social_preferences": ["enjoys group activities", "prefers not to change hotels during a trip"],
+  "constraints": [
+    {"category": "budget", "name": "trip budget", "value": "preferred max $1,900; absolute max $2,100", "constraint_type": "hard", "negotiable": "only with explicit approval within absolute maximum"},
+    {"category": "activity", "name": "history and architecture", "value": true, "constraint_type": "soft", "negotiable": true},
+    {"category": "activity", "name": "one outdoor activity", "value": true, "constraint_type": "soft", "negotiable": true},
+    {"category": "pace", "name": "late starts", "value": true, "constraint_type": "soft", "negotiable": true},
+    {"category": "lodging", "name": "one hotel", "value": true, "constraint_type": "soft", "negotiable": true}
+  ]
+}

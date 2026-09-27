@@ -1,0 +1,25 @@
+{
+  "id": "priya",
+  "name": "Priya Patel",
+  "age_range": "early 30s",
+  "home_city": "Chicago",
+  "occupation": "civil engineer",
+  "dietary_needs": [{"value": "no shellfish", "constraint_type": "hard"}],
+  "travel_preferences": ["one beach or waterfront day", "public transit", "not overly packed"],
+  "budget_usd_per_person": 2000,
+  "budget_guidelines": {
+    "preferred_max_usd": 2000,
+    "absolute_max_usd": 2200,
+    "flexibility": "Can increase by up to $200 only if transit remains practical and the user explicitly approves.",
+    "protected_expenses": ["accessible_transport", "lodging"]
+  },
+  "accessibility_or_health_notes": [{"value": "avoid journeys longer than two hours during the day", "constraint_type": "hard"}],
+  "social_preferences": ["likes a balance of group time and free time"],
+  "constraints": [
+    {"category": "dietary", "name": "no shellfish", "value": true, "constraint_type": "hard", "negotiable": false},
+    {"category": "accessibility", "name": "daytime travel duration", "value": "no journey longer than two hours", "constraint_type": "hard", "negotiable": false},
+    {"category": "budget", "name": "trip budget", "value": "preferred max $2,000; absolute max $2,200", "constraint_type": "hard", "negotiable": "only with explicit approval within absolute maximum"},
+    {"category": "activity", "name": "waterfront day", "value": true, "constraint_type": "soft", "negotiable": true},
+    {"category": "transport", "name": "public transit", "value": true, "constraint_type": "soft", "negotiable": true}
+  ]
+}

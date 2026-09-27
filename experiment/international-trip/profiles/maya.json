@@ -1,0 +1,25 @@
+{
+  "id": "maya",
+  "name": "Maya Rivera",
+  "age_range": "late 20s",
+  "home_city": "San Francisco",
+  "occupation": "product designer",
+  "dietary_needs": [{"value": "vegetarian", "constraint_type": "hard"}],
+  "travel_preferences": ["walkable neighborhoods", "local cafes", "slower mornings"],
+  "budget_usd_per_person": 1800,
+  "budget_guidelines": {
+    "preferred_max_usd": 1800,
+    "absolute_max_usd": 1950,
+    "flexibility": "Can increase by up to $150 for a clearly better fit, with explicit approval.",
+    "protected_expenses": ["lodging", "food"]
+  },
+  "accessibility_or_health_notes": [],
+  "social_preferences": ["likes shared dinners", "needs one quiet evening after arrival"],
+  "constraints": [
+    {"category": "dietary", "name": "vegetarian meals", "value": "vegetarian option at shared meals", "constraint_type": "hard", "negotiable": false},
+    {"category": "budget", "name": "trip budget", "value": "preferred max $1,800; absolute max $1,950", "constraint_type": "hard", "negotiable": "only with explicit approval within absolute maximum"},
+    {"category": "location", "name": "walkable neighborhoods", "value": true, "constraint_type": "soft", "negotiable": true},
+    {"category": "pace", "name": "slower mornings", "value": true, "constraint_type": "soft", "negotiable": true},
+    {"category": "social", "name": "quiet arrival evening", "value": true, "constraint_type": "soft", "negotiable": true}
+  ]
+}

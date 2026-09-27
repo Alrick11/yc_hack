@@ -1,0 +1,11 @@
+{
+  "user_id": "leo",
+  "timezone": "America/New_York",
+  "meetings": [
+    {"start": "2026-10-12T08:00:00-04:00", "end": "2026-10-16T15:00:00-04:00", "title": "School grading week", "importance": "high", "constraint_type": "hard"},
+    {"start": "2026-10-21T16:00:00-04:00", "end": "2026-10-21T17:30:00-04:00", "title": "Department meeting", "importance": "medium", "constraint_type": "soft"}
+  ],
+  "important_dates": [
+    {"date": "2026-10-31", "title": "Mother's birthday", "importance": "critical", "constraint_type": "hard"}
+  ]
+}

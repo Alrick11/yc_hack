@@ -1,0 +1,16 @@
+{
+  "task_id": "replace-with-task-id",
+  "objective": "replace with the experiment objective",
+  "max_rounds": 3,
+  "shared_context": {},
+  "participants": [
+    {"agent_id": "participant-1", "memory_query": "task-relevant preferences", "profile": "replace"},
+    {"agent_id": "participant-2", "memory_query": "task-relevant preferences", "profile": "replace"},
+    {"agent_id": "participant-3", "memory_query": "task-relevant preferences", "profile": "replace"}
+  ],
+  "proposal_rounds": [
+    {"replace": "initial proposal"},
+    {"replace": "revised proposal"}
+  ]
+}
+
