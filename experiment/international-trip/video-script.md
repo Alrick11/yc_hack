@@ -3,7 +3,7 @@
 1. Show the three user cards. Each card contains only user-related facts.
 2. Open the separate October calendar view for each person and show meetings
    plus important dates.
-3. Inject the synthetic PII and HIPAA/PHI queries from
+3. Inject the synthetic PII and prompt-injection queries from
    `safety/injection-queries.json`. Show the personal agents refusing or
    redacting them while the shared trace keeps only bounded reason codes.
 4. Create a no-common-availability or constraint-tradeoff case. Show the

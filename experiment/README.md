@@ -24,6 +24,13 @@ ollama pull <local-model>
 PYTHONPATH=src OLLAMA_MODEL=<local-model> python -m yc_hack.demo
 ```
 
+For the recording view, run the web timeline in a second terminal after the
+runner has created its event path:
+
+```bash
+PYTHONPATH=src python -m yc_hack web --events .runtime/events/<session>.jsonl
+```
+
 To use a different config:
 
 ```bash
@@ -43,4 +50,5 @@ the orchestration protocol.
 - Show the round/proposal/decision timeline.
 - Do not show profiles, raw prompts, API keys, or private memory output.
 - Capture the final consensus and the sanitized procedure artifact.
-
+- Include the existing safety-injection segment and show refusal/blocked
+  reason codes in the shared timeline.

@@ -42,12 +42,37 @@ PYTHONPATH=src python -m unittest discover -s tests -v
 ```bash
 PYTHONPATH=src python -m yc_hack preflight
 PYTHONPATH=src python -m yc_hack run --config experiment/international-trip/scenario.json
+PYTHONPATH=src python -m yc_hack workflow --config experiment/international-trip/scenario.json
 PYTHONPATH=src python -m yc_hack replay --events .runtime/events/<session>.jsonl
+PYTHONPATH=src python -m yc_hack web \
+  --config experiment/international-trip/scenario.json \
+  --events .runtime/events/live.jsonl
+PYTHONPATH=src python -m yc_hack video-assets --events .runtime/events/<session>.jsonl
 ```
 
 The runner emits append-only JSONL events containing task, proposal, bounded
 decision, and outcome metadata. Private profile content is never written to
 the event stream.
+
+The web command serves a live ChatGPT-style workspace with Start live demo and
+Reset controls. It launches the local workflow, streams coordinator and agent
+responses from the JSONL event log, and shows rounds, proposals, revisions,
+and terminal outcomes. It requires no frontend dependencies.
+
+For the demo's soft-blocker path, the server also exposes
+`POST /api/user-approval`. It is a dummy user adapter that returns
+`{"decision":"yes"}`; the coordinator calls it only for negotiable requests
+such as a budget increase and records the explicit approval before continuing.
+
+The `video-assets` command uses Pillow to generate title, round, and outcome
+cards from the same public event log. Install the optional video dependency
+with `python3 -m pip install -r requirements-video.txt`. The browser remains
+the live product surface; Pillow adds recording overlays without recreating
+or inventing agent activity.
+
+The workflow command loads profiles and calendars, computes common availability,
+runs safety refusals, asks local Ollama for destinations and an itinerary, and
+emits budget approval gates without exposing private profile content.
 
 ## Pull protocol
 

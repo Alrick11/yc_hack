@@ -49,17 +49,52 @@ class LocalOllamaAgent:
         if not self.ollama.available():
             return AgentDecision(self.spec.agent_id, "conditional", "model_unavailable", "model unavailable")
         result = None
-        for _ in range(2):
+        prompts = [
+            json.dumps(prompt),
+            json.dumps({
+                "private_context": private_context,
+                "proposal": proposal.content,
+                "instruction": (
+                    "Evaluate only your private hard constraints. Approve when all hard constraints "
+                    "are satisfied, even if soft preferences are imperfect. Use conditional only for "
+                    "a soft preference that needs a visible tradeoff. Reject only for a hard constraint, "
+                    "privacy/safety issue, or missing required proposal field. Return exactly one JSON "
+                    "object with decision approve, reject, or conditional; reason_code; public_message."
+                ),
+            }),
+            json.dumps({
+                "private_context": private_context,
+                "proposal": proposal.content,
+                "instruction": (
+                    "Return one JSON object and nothing else. Required keys: decision, reason_code, "
+                    "public_message. decision must be exactly approve, reject, or conditional. "
+                    "Approve if all hard constraints fit; soft preferences are not blockers."
+                ),
+            }),
+        ]
+        valid_result = None
+        for prompt_text in prompts:
             try:
-                result = parse_json_object(self.ollama.chat(
+                candidate = parse_json_object(self.ollama.chat(
                     "You are a private personal agent. Never reveal private context. Return JSON only.",
-                    json.dumps(prompt),
+                    prompt_text,
                     json_mode=True,
                 ))
             except (OSError, KeyError, TypeError, ValueError):
+                candidate = None
+            candidate_decision = str(candidate.get("decision", "")).strip().lower() if candidate else ""
+            if candidate and candidate_decision in {"approve", "reject", "conditional"}:
+                valid_result = candidate
+                # A first-pass conditional can be a formatting/understanding miss.
+                # Give the compact contract prompt one chance to produce a definitive
+                # decision, while preserving conditional if it is repeated.
+                if candidate_decision != "conditional":
+                    break
+                result = candidate
+            else:
                 result = None
-            if result:
-                break
+        if valid_result:
+            result = valid_result
         decision_value = str(result.get("decision", "")).strip().lower() if result else ""
         if decision_value not in {"approve", "reject", "conditional"}:
             return AgentDecision(self.spec.agent_id, "conditional", "invalid_agent_response", "invalid response")
