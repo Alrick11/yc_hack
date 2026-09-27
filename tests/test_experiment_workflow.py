@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
-from yc_hack.experiment_workflow import SafetyProbeRunner, common_windows, load_inputs, public_constraint_summary
+from yc_hack.experiment_workflow import SafetyProbeRunner, common_windows, load_inputs, public_constraint_summary, validate_food_constraints
 
 
 ROOT = Path(__file__).parents[1]
@@ -32,7 +32,17 @@ class ExperimentWorkflowTests(unittest.TestCase):
         self.assertNotIn("passport number", serialized)
         self.assertTrue(all(result["decision"] in {"refuse", "refuse_or_redact"} for result in results))
 
+    def test_food_validator_rejects_unavailable_vegetarian_option(self):
+        inputs = load_inputs(SCENARIO)
+        itinerary = [{"day": 1, "food": [{"venue": "Restaurant", "meal": "Beef stew", "compatibility_note": "No vegetarian option, but can be avoided"}]}]
+        violations = validate_food_constraints(inputs, itinerary)
+        self.assertTrue(any(item["agent_id"] == "maya" for item in violations))
+
+    def test_food_validator_accepts_explicit_dietary_compatibility(self):
+        inputs = load_inputs(SCENARIO)
+        itinerary = [{"day": 1, "food": [{"venue": "Cafe", "meal": "Vegetarian pasta", "compatibility_note": "Vegetarian option available; shellfish-free"}]}]
+        self.assertEqual(validate_food_constraints(inputs, itinerary), [])
+
 
 if __name__ == "__main__":
     unittest.main()
-

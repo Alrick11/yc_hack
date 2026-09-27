@@ -1,0 +1,21 @@
+Coordinating a group trip sounds simple, but it becomes difficult when everyone has private preferences, calendars, dietary needs, accessibility requirements, and different budgets.
+
+This is Together.AI: a privacy-first platform where each person keeps a personal AI agent that understands their authorized preferences and constraints. These agents do not expose private profile data to one another. Instead, they share only the minimum task-relevant information through a coordinator.
+
+Behind the scenes, GBrain provides the private memory layer for each personal agent. Each agent can retrieve only its own user's authorized preferences and constraints. The coordinator never receives the raw private memories.
+
+Here, Leo, Maya, and Priya are asking their agents to plan a five-day international trip in October 2026. The first step is finding dates that work for everyone. The coordinator has found common availability without exposing private calendar details.
+
+Next, the coordinator generates destination options from the shared task context and bounded constraints. It can now create an itinerary while accounting for the group’s requirements, without copying anyone’s private profile into the shared conversation.
+
+Each personal agent reviews the proposal independently. The agents return only an approval, rejection, or bounded reason—not their private memories or hidden reasoning.
+
+Hard constraints, such as availability, dietary needs, accessibility requirements, and absolute budgets, cannot be silently violated. Soft preferences can be traded off, but the affected user must see and approve the change.
+
+This budget tradeoff requires explicit approval from the affected user before the agents continue. Together.AI makes the requested change visible, shows why approval is needed, and records the user’s decision before proceeding.
+
+The safety boundary handles requests to reveal private information or follow a prompt injection. Those requests are refused or redacted, while the shared trace records only a bounded reason code.
+
+After the negotiation, Memorable can receive a sanitized trace of the task and bounded decisions. It can preserve a reusable coordination procedure without storing private profiles, private memories, or sensitive conversation content.
+
+Finally, consensus is reached only after all three agents explicitly approve the same proposal. Together.AI can then produce a consensus-approved itinerary. If the agents cannot safely agree, the workflow blocks and asks the user for a resolution instead of guessing.

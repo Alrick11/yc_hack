@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 
-from .runner import default_config, preflight, replay, run, workflow
+from .runner import default_config, preflight, replay, run, safety_demo, workflow
 from .web_demo import serve
 from .video_assets import render_assets
 
@@ -29,6 +29,9 @@ def main() -> int:
     workflow_parser.add_argument("--config", default=default_config())
     workflow_parser.add_argument("--events")
     workflow_parser.add_argument("--resolution", help="JSON file containing explicit user resolutions")
+    safety_parser = subparsers.add_parser("safety")
+    safety_parser.add_argument("--config", default=default_config())
+    safety_parser.add_argument("--events")
     assets_parser = subparsers.add_parser("video-assets")
     assets_parser.add_argument("--events", required=True)
     assets_parser.add_argument("--output", default=".runtime/video-assets")
@@ -42,6 +45,8 @@ def main() -> int:
         return 0
     if args.command == "workflow":
         return workflow(args.config, args.events, args.resolution)
+    if args.command == "safety":
+        return safety_demo(args.config, args.events)
     if args.command == "video-assets":
         try:
             assets = render_assets(args.events, args.output)

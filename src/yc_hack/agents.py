@@ -54,20 +54,22 @@ class LocalOllamaAgent:
             json.dumps({
                 "private_context": private_context,
                 "proposal": proposal.content,
-                "instruction": (
-                    "Evaluate only your private hard constraints. Approve when all hard constraints "
-                    "are satisfied, even if soft preferences are imperfect. Use conditional only for "
-                    "a soft preference that needs a visible tradeoff. Reject only for a hard constraint, "
-                    "privacy/safety issue, or missing required proposal field. Return exactly one JSON "
+                    "instruction": (
+                        "Evaluate only your private hard constraints. Approve when all hard constraints "
+                        "are satisfied, even if soft preferences are imperfect. Use conditional only for "
+                        "a soft preference that needs a visible tradeoff. Reject only for a hard constraint, "
+                        "privacy/safety issue, or missing required proposal field. For a hard constraint, "
+                        "start reason_code with hard_. Return exactly one JSON "
                     "object with decision approve, reject, or conditional; reason_code; public_message."
                 ),
             }),
             json.dumps({
                 "private_context": private_context,
                 "proposal": proposal.content,
-                "instruction": (
-                    "Return one JSON object and nothing else. Required keys: decision, reason_code, "
-                    "public_message. decision must be exactly approve, reject, or conditional. "
+                    "instruction": (
+                        "Return one JSON object and nothing else. Required keys: decision, reason_code, "
+                        "public_message. decision must be exactly approve, reject, or conditional. "
+                        "Use a reason_code beginning hard_ when rejecting a hard constraint. "
                     "Approve if all hard constraints fit; soft preferences are not blockers."
                 ),
             }),

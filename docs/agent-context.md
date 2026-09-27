@@ -18,7 +18,7 @@ of anyone's private memory.
 - Task ID: `international-trip-demo`
 - Objective: three personal agents plan and approve a five-day international trip
 - Status: `validated`
-- Context version: `0.7`
+- Context version: `1.1`
 - Coordinator: local Ollama coordinator
 - Participants: three personal agents
 - Runtime model requirement: local Ollama
@@ -164,6 +164,9 @@ the blocking reason rather than silently relaxing a constraint.
 - `web` serves a dependency-free ChatGPT-style live workspace. Start and Reset
   controls launch or clear the configured workflow; coordinator and agent
   bubbles stream from the JSONL event log.
+- `/` and `/injection` use separate event files and workflow processes. The
+  injection tab runs the `safety` command and shows only refusal/redaction
+  behavior; it is not part of the planning negotiation.
 - The web server exposes `POST /api/user-approval` as a demo-only user adapter;
   it returns `{"decision":"yes"}` and must be replaced by a real user-facing
   approval service outside the demo.
@@ -175,7 +178,7 @@ the blocking reason rather than silently relaxing a constraint.
 ## Validation status
 
 - Local Ollama JSON smoke test: passed.
-- Unit tests: passed, 11/11.
+- Unit tests: passed, 13/13.
 - Pull-mode end-to-end run: passed with three local Ollama models and reached
   `consensus_reached`, including a finalized five-day itinerary.
 - Browser-controlled live run: passed through Start/Reset endpoints and
@@ -197,6 +200,27 @@ the blocking reason rather than silently relaxing a constraint.
   safety refusals, conflicts, and user decisions separately. A workflow-level
   block is rendered as blocked and human-decision-required, not as idle or
   successful.
+- The browser demo replays the public event stream sequentially with a 2.5
+  second gap between messages. Reset clears the playback queue, and the final
+  outcome is held until the terminal event is visible.
+- The browser exposes two independent tabs: `/` for planning/consensus and
+  `/injection` for the isolated safety/injection run. Planning no longer emits
+  injection events.
+- The injection tab displays the synthetic injected query alongside the bounded
+  refusal/redaction; those prompts are included only in the isolated injection
+  event stream and are never copied into planning context.
+- Planning publishes a proposal with `stage=proposal_landed`; each agent
+  contribution includes a bounded `public_message` explaining agreement or
+  disagreement. Itinerary days require both activities and concrete food
+  venues.
+- The planning web demo enables a data-derived soft-budget scenario: it uses
+  the lowest configured preferred and absolute limits to create a modest,
+  within-limit approval request. The coordinator shows the price violation,
+  asks the affected user, records the mock approval, and then runs agent
+  consensus. This demo seed is not used by direct CLI workflows.
+- A pre-consensus food validator rejects any food stop without explicit
+  compatibility evidence for hard dietary constraints. “Can be avoided” is
+  not sufficient; the workflow emits `unmet_user_constraint` and blocks.
 - The demo-only approval adapter is intentionally local and deterministic; it
   must be replaced by an authenticated user-facing service for production.
 

@@ -13,7 +13,7 @@ from .agents import LocalOllamaAgent
 from .config import ConfigError, load_experiment, validate_experiment
 from .coordinator import LocalOllamaCoordinator
 from .events import JsonlEventLog, read_events
-from .experiment_workflow import ExperimentPlanner, load_inputs
+from .experiment_workflow import ExperimentPlanner, SafetyProbeRunner, load_inputs
 from .ollama import OllamaClient
 from .orchestrator import ConsensusOrchestrator
 from .protocol import AgentSpec, Proposal, TaskSpec
@@ -100,6 +100,8 @@ def _request_user_approval(url: str | None, request: dict) -> str | None:
     """Ask the configured user-approval adapter; fail closed on any error."""
     if not url:
         return None
+
+
     body = json.dumps({
         "request_id": f"budget-{request['agent_id']}",
         "agent_id": request["agent_id"],
@@ -116,6 +118,28 @@ def _request_user_approval(url: str | None, request: dict) -> str | None:
         return "approved" if decision in {"yes", "approved", "approve"} else "declined"
     except (OSError, ValueError, KeyError, urllib.error.URLError):
         return None
+
+
+def safety_demo(config_path: str, events_path: str | None = None) -> int:
+    """Run the isolated injection/safety demo without planning events."""
+    try:
+        inputs = load_inputs(config_path)
+    except (OSError, KeyError, ValueError) as error:
+        print(f"safety_config_error={error}")
+        return 2
+    session_id = f"{inputs.scenario.get('title', 'safety').lower().replace(' ', '-')}-safety-{int(time.time())}"
+    event_path = Path(events_path or f".runtime/events/{session_id}.jsonl")
+    log = JsonlEventLog(event_path, session_id)
+    log.emit("injection_run_started", source="experiment_safety_fixtures")
+    results = SafetyProbeRunner(inputs.safety).run(include_prompts=True)
+    for result in results:
+        log.emit("safety_refusal", **result)
+    log.emit("injection_run_completed", refused_count=len(results))
+    print(f"session={session_id}")
+    print(f"events={event_path}")
+    print(f"safety_status=completed")
+    print(f"refused_count={len(results)}")
+    return 0
 
 
 def workflow(config_path: str, events_path: str | None = None, resolution_path: str | None = None) -> int:
@@ -163,6 +187,22 @@ def workflow(config_path: str, events_path: str | None = None, resolution_path: 
                 source="coordinator_constraint_check",
             )
             for request in unresolved_budget:
+                approval_question = (
+                    f"This proposal is ${request['incremental_amount']} above your preferred "
+                    f"${request['preferred_limit']} budget but within your ${request['absolute_maximum']} "
+                    "absolute maximum. May I approve it to preserve the group itinerary?"
+                )
+                log.emit(
+                    "conflict_detected",
+                    conflict_type="soft_budget_preference",
+                    reason_code="preferred_budget_exceeded",
+                    affected_agents=[request["agent_id"]],
+                    summary=(
+                        f"The proposal is ${request['incremental_amount']} above {request['agent_id']}'s "
+                        f"preferred budget, but remains within the stated absolute maximum."
+                    ),
+                    source="coordinator_constraint_check",
+                )
                 log.emit(
                     "user_approval_requested",
                     request_id=f"budget-{request['agent_id']}",
@@ -224,7 +264,7 @@ def workflow(config_path: str, events_path: str | None = None, resolution_path: 
             print(f"user_action_required={json.dumps({'reason_code': 'budget_approval_required', 'choices': choices})}")
         else:
             task = TaskSpec(
-                task_id=f"{inputs.scenario.get('title', 'workflow').lower().replace(' ', '-')}-approval",
+                task_id="3 musketeers",
                 objective="Approve the generated trip proposal using private participant constraints.",
                 max_rounds=2,
                 shared_context={

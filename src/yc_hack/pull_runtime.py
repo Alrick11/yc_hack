@@ -36,6 +36,10 @@ class PullAgentWorker:
 def _contribution_status(decision: AgentDecision) -> str:
     if decision.decision == "approve":
         return "approved"
+    if decision.decision == "reject" and decision.reason_code.startswith((
+        "hard_", "unmet_", "constraint_violation", "missing_required", "budget_hard"
+    )):
+        return "blocked"
     if decision.reason_code.startswith(("privacy", "safety", "unsafe")):
         return "blocked"
     return "needs_revision"

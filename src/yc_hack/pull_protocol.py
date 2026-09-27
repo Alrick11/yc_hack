@@ -88,6 +88,7 @@ class PullTaskStore:
             round=task.round_number,
             proposal_version=task.proposal_version,
             proposal=proposal,
+            stage="proposal_landed",
             source="local_ollama_coordinator",
             source_detail="Coordinator-generated from shared availability and authorized bounded constraints; agents only review it.",
         )
@@ -122,7 +123,7 @@ class PullTaskStore:
             return "rejected_stale_contribution"
         task.responses[contribution.agent_id] = contribution
         del task.active_leases[contribution.agent_id]
-        self._event(task, "agent_contribution", agent_id=contribution.agent_id, round=contribution.round_number, proposal_version=contribution.proposal_version, kind=contribution.kind, status=contribution.status, reason_code=contribution.reason_code)
+        self._event(task, "agent_contribution", agent_id=contribution.agent_id, round=contribution.round_number, proposal_version=contribution.proposal_version, kind=contribution.kind, status=contribution.status, reason_code=contribution.reason_code, public_message=contribution.public_message)
         if len(task.responses) == len(task.required_agents):
             self._evaluate(task)
         return "accepted"

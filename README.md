@@ -57,7 +57,17 @@ the event stream.
 The web command serves a live ChatGPT-style workspace with Start live demo and
 Reset controls. It launches the local workflow, streams coordinator and agent
 responses from the JSONL event log, and shows rounds, proposals, revisions,
-and terminal outcomes. It requires no frontend dependencies.
+and terminal outcomes. Messages are replayed one at a time with a short gap
+for screen recording. It requires no frontend dependencies.
+
+The planning tab is available at `/`; the separate injection/safety tab is
+available at `/injection`. They have independent Reset and Start controls and
+event streams.
+
+The injection tab shows the synthetic query being tested next to the bounded
+refusal. The planning tab seeds a data-derived, within-absolute-limit soft
+budget tradeoff for the recording so the coordinator visibly asks the affected
+user before agent consensus continues.
 
 For the demo's soft-blocker path, the server also exposes
 `POST /api/user-approval`. It is a dummy user adapter that returns
